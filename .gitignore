@@ -14,6 +14,8 @@ environment/*
 www/*
 logs/*
 docker/data/*
+docker/config/apache/apache-selfsigned.crt
+docker/config/apache/apache-selfsigned.key
 
 !www/.gitkeep
 !docker/data/.gitkeep
