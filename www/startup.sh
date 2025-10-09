@@ -1,6 +1,8 @@
 #!/bin/bash 
 
 SUITEVERSION=suitecrm-8-9-0
+touch /etc/ssl/private/apache-selfsigned.key
+touch /etc/ssl/certs/apache-selfsigned.crt
 
 do_init () {
   echo "Initialising"
