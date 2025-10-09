@@ -1,11 +1,13 @@
 #!/bin/bash 
 
+SUITEVERSION=suitecrm-8-9-0
+
 do_init () {
   echo "Initialising"
-  echo "Downloading SuiteCRM 8.7.1"
-   wget -q https://suitecrm.com/download/148/suite87/564667/suitecrm-8-7-1.zip
+  echo "Downloading $SUITEVERSION"
+   wget -q https://suitecrm.com/download/166/suite89/565428/$SUITEVERSION.zip
    echo "Extracting"
-   unzip -o -q suitecrm-8-7-1.zip -d SuiteCRM/
+   unzip -o -q $SUITEVERSION.zip -d SuiteCRM/
    echo "Generating self signed keys"
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
           -keyout /etc/ssl/private/apache-selfsigned.key \
@@ -22,7 +24,7 @@ fi
 
       echo "starting Apache server"
      
-      echo "SuiteCRM is now available @ http://localhost:8080 and https://localhost:8081"
+      echo "$SUITEVERSION is now available @ http://localhost:8080 and https://localhost:8081"
       echo "PHPMyAdmin is available @ http://localhost:8181"
       echo "MySQL is available on port 3306"
 
