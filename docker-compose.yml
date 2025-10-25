@@ -1,50 +1,55 @@
 services:
+  # SERVICIO DE LA APLICACIÓN SUITECRM (Web/PHP)
   suitecrm:
-    # Mantenemos el build para que use tu Dockerfile
+    # Indica a Docker que construya la imagen con el Dockerfile en la misma carpeta
     build: ./
-    # Eliminamos la línea 'image: suitecrm:latest' para que EasyPanel nombre la imagen
     networks:
       - suitecrm_net
     volumes:
-      # SuiteCRM Application Folder (CRÍTICO: Si el código de SuiteCRM está en ./www)
+      # Montaje del código de la aplicación (CRÍTICO)
+      # El código de SuiteCRM debe estar dentro de la carpeta ./www en el repositorio
       - ./www:/var/www/html
-      # Log Folders (No causan conflicto, se mantienen para la persistencia)
+      
+      # Volúmenes para persistencia de Logs (No causan conflicto)
       - ./logs/SuiteCRM:/var/www/html/SuiteCRM/logs
       - ./logs/SuiteCRM_Core/suitecrm.log:/var/www/html/SuiteCRM/public/legacy/suitecrm.log
       - ./logs/apache:/var/log/apache2/
       - ./logs/php:/var/log/php/
       
-      # ELIMINAMOS VOLÚMENES DE CONFIGURACIÓN DE PHP/APACHE/SSL 
-      # Las lineas de sites.conf y php.ini eliminadas
-      
     env_file:
+      # Archivo de variables de entorno para la configuración de la BD
       - environment/sample.env
-    # AÑADIMOS EL COMANDO DIRECTO PARA EVITAR LA GENERACIÓN DE SSL EN EL ENTRYPOINT
-    command: /usr/sbin/apache2ctl -D FOREGROUND
-    # Eliminamos la sección 'ports'
+      
+    # Eliminamos 'command:' para usar el entrypoint por defecto y evitar el fallo de SSL
+    # Eliminamos la sección 'ports:' para que EasyPanel se encargue de la exposición
     restart: on-failure
     labels:
       - me.titmus.authors="jon@titmus.me"
 
+  # SERVICIO DE LA BASE DE DATOS MYSQL
   mysql_crm:
     image: mysql
-    # Eliminamos la sección 'ports'
+    # Eliminamos la sección 'ports:'
     environment:
+      # Credenciales usadas por SuiteCRM y phpMyAdmin para conectarse
       - MYSQL_ROOT_PASSWORD=suitecrm
       - MYSQL_USER=suitecrm
       - MYSQL_PASSWORD=suitecrm
       - MYSQL_DATABASE=suitecrm
     volumes:
+      # Volumen para persistencia de los datos de la BD
       - ./docker/data/mysql:/var/lib/mysql
     networks:
       - suitecrm_net
     restart: on-failure
     
+  # SERVICIO PHP MY ADMIN (Herramienta de Gestión de BD)
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     links:
+      # Conexión interna a la BD
       - mysql_crm
-    # Eliminamos la sección 'ports'
+    # Eliminamos la sección 'ports:'
     environment:
       - PMA_HOST=mysql_crm
       - PMA_USER=suitecrm
