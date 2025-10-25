@@ -1,39 +1,32 @@
 services:
   suitecrm:
+    # Mantenemos el build para que use tu Dockerfile
     build: ./
-    image: suitecrm:latest
+    # Eliminamos la línea 'image: suitecrm:latest' para que EasyPanel nombre la imagen
     networks:
       - suitecrm_net
     volumes:
-      #SuiteCRM Application Folder
+      # SuiteCRM Application Folder (CRÍTICO: Si el código de SuiteCRM está en ./www)
       - ./www:/var/www/html
-      #SuiteCRM Log Folder
+      # Log Folders (No causan conflicto, se mantienen para la persistencia)
       - ./logs/SuiteCRM:/var/www/html/SuiteCRM/logs
       - ./logs/SuiteCRM_Core/suitecrm.log:/var/www/html/SuiteCRM/public/legacy/suitecrm.log
-      #PHP config
-      - ./docker/config/php/php.ini:/etc/php/8.2/apache2/php.ini
-      #APACHE config
-      - ./docker/config/apache/apache2.conf:/etc/apache2/apache2.conf
-      - ./docker/config/apache/sites.conf:/etc/apache2/sites-enabled/sites.conf
-      - ./docker/config/apache/apache-selfsigned.crt:/etc/ssl/certs/apache-selfsigned.crt
-      - ./docker/config/apache/apache-selfsigned.key:/etc/ssl/private/apache-selfsigned.key
-      #APACHE Log Folder
-      - ./logs/apache:/var/log/apache2/  
-      #PHP Log Folder
+      - ./logs/apache:/var/log/apache2/
       - ./logs/php:/var/log/php/
+      
+      # ELIMINAMOS VOLÚMENES DE CONFIGURACIÓN DE PHP/APACHE/SSL 
+      # (Tu Dockerfile ya debe manejar estas configuraciones, y EasyPanel se encarga del SSL)
+      
     env_file:
       - environment/sample.env
-    ports:
-      - "8080:80"
-      - "8081:443"
+    # Eliminamos la sección 'ports'
     restart: on-failure
     labels:
       - me.titmus.authors="jon@titmus.me"
 
   mysql_crm:
     image: mysql
-    ports:
-      - "3306:3306"
+    # Eliminamos la sección 'ports'
     environment:
       - MYSQL_ROOT_PASSWORD=suitecrm
       - MYSQL_USER=suitecrm
@@ -44,13 +37,12 @@ services:
     networks:
       - suitecrm_net
     restart: on-failure
-  
+    
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     links:
       - mysql_crm
-    ports:
-      - 8181:80
+    # Eliminamos la sección 'ports'
     environment:
       - PMA_HOST=mysql_crm
       - PMA_USER=suitecrm
@@ -58,6 +50,7 @@ services:
     networks:
       - suitecrm_net
     restart: no
+
 networks:
     suitecrm_net:
         driver: bridge
