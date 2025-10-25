@@ -19,6 +19,8 @@ services:
       
     env_file:
       - environment/sample.env
+    # AÑADIMOS EL COMANDO DIRECTO PARA EVITAR LA GENERACIÓN DE SSL EN EL ENTRYPOINT
+    command: /usr/sbin/apache2ctl -D FOREGROUND
     # Eliminamos la sección 'ports'
     restart: on-failure
     labels:
