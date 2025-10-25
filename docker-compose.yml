@@ -23,14 +23,12 @@ services:
       - ./logs/php:/var/log/php/
     env_file:
       - environment/sample.env
-    ports:
     restart: on-failure
     labels:
       - me.titmus.authors="jon@titmus.me"
 
   mysql_crm:
     image: mysql
-    ports:
     environment:
       - MYSQL_ROOT_PASSWORD=suitecrm
       - MYSQL_USER=suitecrm
@@ -46,7 +44,6 @@ services:
     image: phpmyadmin/phpmyadmin
     links:
       - mysql_crm
-    ports:
     environment:
       - PMA_HOST=mysql_crm
       - PMA_USER=suitecrm
