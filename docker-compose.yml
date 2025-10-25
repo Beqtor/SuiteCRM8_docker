@@ -31,7 +31,6 @@ services:
   mysql_crm:
     image: mysql
     ports:
-      - "3306:3306" # <- Eliminar (o dejar solo si necesitas acceso externo, pero EasyPanel prefiere la conexión interna por nombre de servicio)
     environment:
       - MYSQL_ROOT_PASSWORD=suitecrm
       - MYSQL_USER=suitecrm
